@@ -12,12 +12,16 @@ router.get("/", async (req, res) => {
   const perpage= parseInt(req.query.perpage) || 5;
   const totalposts = await orders.countDocuments();
   const totalpages= Math.ceil(totalposts/perpage);
+  const email = req.query.email;
 
   if(page>totalpages){
     return res.status(404).json({message:"page not found"})
   }
+
   
-  const orderslist = await orders.find()
+  const filter = { email };
+  
+  const orderslist = await orders.find(filter)
     .skip((page-1)*perpage)
     .limit(perpage)
     .exec();
