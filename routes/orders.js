@@ -8,29 +8,35 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   
-  const page= parseInt(req.query.page) || 1;
-  const perpage= parseInt(req.query.perpage) || 5;
-  const totalposts = await orders.countDocuments();
-  const totalpages= Math.ceil(totalposts/perpage);
+  // const page= parseInt(req.query.page) || 1;
+  // const perpage= parseInt(req.query.perpage) || 5;
+  // const totalposts = await orders.countDocuments();
+  // const totalpages= Math.ceil(totalposts/perpage);
 
-  if(page>totalpages){
-    return res.status(404).json({message:"page not found"})
-  }
+  // const email = req.query.email;
+
+  // if(page>totalpages){
+  //   return res.status(404).json({message:"page not found"})
+  // }
+
+  // const filter = { email };
   
-  const orderslist = await orders.find()
-    .skip((page-1)*perpage)
-    .limit(perpage)
-    .exec();
+  const orderslist = await orders.find({userid:req.query.userid});
+    // .skip((page-1)*perpage)
+    // .limit(perpage)
+    // .exec();
 
   if (!orderslist) {
-    res.status(500).json({ success: false });
+    return res.status(500).json({ success: false });
   }
 
-  return res.status(200).json({
-    "orderslist":orderslist,
-    "totalpages":totalpages,
-    "page":page
-  })
+  // return res.status(200).json({
+  //   "orderslist":orderslist,
+  //   "totalpages":totalpages,
+  //   "page":page
+  // })
+
+  return res.status(200).json(orderslist);
   
 });
 
