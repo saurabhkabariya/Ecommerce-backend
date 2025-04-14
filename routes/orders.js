@@ -21,11 +21,20 @@ router.get("/", async (req, res) => {
   
   const filter = { email };
   
-  const orderslist = await orders.find(filter)
+  if(email){
+    const orderslist = await orders.find(filter)
     .skip((page-1)*perpage)
     .limit(perpage)
     .exec();
 
+  }
+  else{
+    const orderslist = await orders.find()
+    .skip((page-1)*perpage)
+    .limit(perpage)
+    .exec();
+  }
+  
   if (!orderslist) {
     res.status(500).json({ success: false });
   }
