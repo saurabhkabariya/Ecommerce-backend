@@ -12,29 +12,16 @@ router.get("/", async (req, res) => {
   const perpage= parseInt(req.query.perpage) || 5;
   const totalposts = await orders.countDocuments();
   const totalpages= Math.ceil(totalposts/perpage);
-  const email = req.query.email;
 
   if(page>totalpages){
     return res.status(404).json({message:"page not found"})
   }
-
   
-  const filter = { email };
-  
-  if(email){
-    const orderslist = await orders.find(filter)
+  const orderslist = await orders.find()
     .skip((page-1)*perpage)
     .limit(perpage)
     .exec();
 
-  }
-  else{
-    const orderslist = await orders.find()
-    .skip((page-1)*perpage)
-    .limit(perpage)
-    .exec();
-  }
-  
   if (!orderslist) {
     res.status(500).json({ success: false });
   }
