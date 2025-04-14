@@ -66,8 +66,17 @@ router.get("/", async (req, res) => {
   
   if(req.query){
     if(req.query.minprice !== undefined && req.query.maxprice !== undefined){
-      if(req.query.location !== "All" && req.query.location !== null && req.query.location !== undefined ){
-        ProductList=await Product.find({subcatid:req.query.subcatid,location:req.query.location}).populate("category subcat");
+      if(req.query.location !== "" && req.query.location !== null && req.query.location !== undefined ){
+        if(req.query.subcatid !== undefined){
+          ProductList=await Product.find({subcatid:req.query.subcatid,location:req.query.location}).populate("category subcat");
+        }
+        else if(req.query.category !== undefined){
+          ProductList=await Product.find({category:req.query.category,location:req.query.location}).populate("category subcat");
+        }
+        else{
+          ProductList=await Product.find({location:req.query.location}).populate("category subcat");
+        }
+        
       }
       else{
         ProductList=await Product.find({subcatid:req.query.subcatid}).populate("category subcat");
@@ -84,7 +93,7 @@ router.get("/", async (req, res) => {
       })
   
       if (!ProductList) {
-        res.status(500).json({ success: false });
+        return res.status(500).json({ success: false });
       }
       return res.status(200).json({
         "ProductList":filteredproducts,
@@ -132,6 +141,12 @@ router.get("/", async (req, res) => {
           }
           else if(req.query.category !== undefined){
             ProductList = await Product.find({category:req.query.category}).populate("category subcat")
+          }
+          else if(req.query.rating !== undefined && req.query.subcatid !== undefined){
+            ProductList = await Product.find({rating:req.query.rating,subcatid:req.query.subcatid}).populate("category subcat")
+          }
+          else if(req.query.rating !== undefined && req.query.category !== undefined){
+            ProductList = await Product.find({rating:req.query.rating,category:req.query.category}).populate("category subcat")
           }
           else{
             ProductList= await Product.find().populate("category subcat")
