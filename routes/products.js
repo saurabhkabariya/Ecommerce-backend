@@ -50,150 +50,189 @@ router.post('/uploadfiles', upload.array("images"), async (req, res) => {
   res.json({success:true,images:imagesarr});
 })
 
-router.get("/", async (req, res) => { 
+// router.get("/", async (req, res) => { 
 
   
-  const page= parseInt(req.query.page) || 1;
-  const perpage=parseInt(req.query.perpage) || 8;
-  const totalposts = await Product.countDocuments();
-  const totalpages= Math.ceil(totalposts/perpage);
+//   const page= parseInt(req.query.page) || 1;
+//   const perpage=parseInt(req.query.perpage) || 8;
+//   const totalposts = await Product.countDocuments();
+//   const totalpages= Math.ceil(totalposts/perpage);
 
-  if(page>totalpages){
-    return res.status(404).json({message:"page not found"})
-  }
+//   if(page>totalpages){
+//     return res.status(404).json({message:"page not found"})
+//   }
 
-  let ProductList=[];
+//   let ProductList=[];
   
-  if(req.query){
-    if(req.query.minprice !== undefined && req.query.maxprice !== undefined){
-      if(req.query.location !== "All" && req.query.location !== null && req.query.location !== undefined ){
-        ProductList=await Product.find({subcatid:req.query.subcatid,location:req.query.location}).populate("category subcat");
-      }
-      else{
-        ProductList=await Product.find({subcatid:req.query.subcatid}).populate("category subcat");
-      }
+//   if(req.query){
+//     if(req.query.minprice !== undefined && req.query.maxprice !== undefined){
+//       if(req.query.location !== "All" && req.query.location !== null && req.query.location !== undefined ){
+//         ProductList=await Product.find({subcatid:req.query.subcatid,location:req.query.location}).populate("category subcat");
+//       }
+//       else{
+//         ProductList=await Product.find({subcatid:req.query.subcatid}).populate("category subcat");
+//       }
   
-      const filteredproducts=ProductList.filter(product =>{
-        if(req.query.minprice && product.price < (+req.query.minprice)){
-          return false;
-        }
-        if(req.query.maxprice && product.price > (+req.query.maxprice)){
-          return false;
-        }
-        return true;
-      })
+//       const filteredproducts=ProductList.filter(product =>{
+//         if(req.query.minprice && product.price < (+req.query.minprice)){
+//           return false;
+//         }
+//         if(req.query.maxprice && product.price > (+req.query.maxprice)){
+//           return false;
+//         }
+//         return true;
+//       })
   
-      if (!ProductList) {
-        res.status(500).json({ success: false });
-      }
-      return res.status(200).json({
-        "ProductList":filteredproducts,
-        "totalpages":totalpages,
-        "page":page
-      })
-    }
-    else if(req.query.page !== undefined || req.query.perpage !== undefined){
-      if(req.query.location !== "All" && req.query.location !== null && req.query.location !== undefined ){
-        ProductList = await Product.find({location:req.query.location}).populate("category subcat").skip((page-1)*perpage)
-        .limit(perpage)
-        .exec();
-      }
-      else{
-        ProductList = await Product.find().populate("category subcat").skip((page-1)*perpage)
-        .limit(perpage)
-        .exec();
+//       if (!ProductList) {
+//         res.status(500).json({ success: false });
+//       }
+//       return res.status(200).json({
+//         "ProductList":filteredproducts,
+//         "totalpages":totalpages,
+//         "page":page
+//       })
+//     }
+//     else if(req.query.page !== undefined || req.query.perpage !== undefined){
+//       if(req.query.location !== "All" && req.query.location !== null && req.query.location !== undefined ){
+//         ProductList = await Product.find({location:req.query.location}).populate("category subcat").skip((page-1)*perpage)
+//         .limit(perpage)
+//         .exec();
+//       }
+//       else{
+//         ProductList = await Product.find().populate("category subcat").skip((page-1)*perpage)
+//         .limit(perpage)
+//         .exec();
   
-      }
+//       }
   
-      if (!ProductList) {
-        res.status(500).json({ success: false });
-      }
-      return res.status(200).json({
-        "ProductList":ProductList,
-        "totalpages":totalpages,
-        "page":page
-      })
-    }
-    else{
-      // if(req.query.catname !== undefined || req.query.subcatid !== undefined || req.query.rating !== undefined || req.query.location !== "All"){
-      //   ProductList = await Product.find(req.query).populate("category subcat")
+//       if (!ProductList) {
+//         res.status(500).json({ success: false });
+//       }
+//       return res.status(200).json({
+//         "ProductList":ProductList,
+//         "totalpages":totalpages,
+//         "page":page
+//       })
+//     }
+//     else{
+//       // if(req.query.catname !== undefined || req.query.subcatid !== undefined || req.query.rating !== undefined || req.query.location !== "All"){
+//       //   ProductList = await Product.find(req.query).populate("category subcat")
     
-      // }
-      // else{
-        if(req.query.location !== "All" && req.query.location !== null && req.query.location !== undefined ){
-          ProductList = await Product.find(req.query).populate("category subcat")
-        }
-        else{
-          if(req.query.catname !== undefined){
-            ProductList = await Product.find({catname:req.query.catname}).populate("category subcat")
-          }
-          else if(req.query.subcatid !== undefined){
-            ProductList = await Product.find({subcatid:req.query.subcatid}).populate("category subcat")
-          }
-          else if(req.query.category !== undefined){
-            ProductList = await Product.find({category:req.query.category}).populate("category subcat")
-          }
-          else{
-            ProductList= await Product.find().populate("category subcat")
-          }
-        }
+//       // }
+//       // else{
+//         if(req.query.location !== "All" && req.query.location !== null && req.query.location !== undefined ){
+//           ProductList = await Product.find(req.query).populate("category subcat")
+//         }
+//         else{
+//           if(req.query.catname !== undefined){
+//             ProductList = await Product.find({catname:req.query.catname}).populate("category subcat")
+//           }
+//           else if(req.query.subcatid !== undefined){
+//             ProductList = await Product.find({subcatid:req.query.subcatid}).populate("category subcat")
+//           }
+//           else if(req.query.category !== undefined){
+//             ProductList = await Product.find({category:req.query.category}).populate("category subcat")
+//           }
+//           else{
+//             ProductList= await Product.find().populate("category subcat")
+//           }
+//         }
   
-          // ProductList = await Product.find({catname:req.query.catname}).populate("category subcat")
-          // .skip((page-1)*perpage)
-          // .limit(perpage)
-          // .exec();
+//           // ProductList = await Product.find({catname:req.query.catname}).populate("category subcat")
+//           // .skip((page-1)*perpage)
+//           // .limit(perpage)
+//           // .exec();
   
-          if (!ProductList) {
-            res.status(500).json({ success: false });
-          }
+//           if (!ProductList) {
+//             res.status(500).json({ success: false });
+//           }
           
-          return res.status(200).json({
-            "ProductList":ProductList,
-            "totalpages":totalpages,
-            "page":page
-          })
+//           return res.status(200).json({
+//             "ProductList":ProductList,
+//             "totalpages":totalpages,
+//             "page":page
+//           })
 
+//     }
+  
+//     // }
+  
+//   }
+//   else{
+//     ProductList = await Product.find().populate("category subcat")
+//       .skip((page-1)*perpage)
+//       .limit(perpage)
+//       .exec();
+//   }
+//   // if(req.query.catname !== undefined){
+//   //   ProductList = await Product.find({catname:req.query.catname}).populate("category subcat")
+
+//   // }
+//   // else{
+//   //   ProductList = await Product.find().populate("category subcat")
+//   //     .skip((page-1)*perpage)
+//   //     .limit(perpage)
+//   //     .exec();
+//   // }
+//   // if(req.query.subcatid !== undefined){
+//   //   ProductList = await Product.find({subcatid:req.query.subcatid}).populate("category subcat")
+//   // }
+//   // else{
+//   //   ProductList = await Product.find().populate("category subcat")
+//   //     .skip((page-1)*perpage)
+//   //     .limit(perpage)
+//   //     .exec();
+//   // }
+
+//   if (!ProductList) {
+//     res.status(500).json({ success: false });
+//   }
+//   return res.status(200).json({
+//     "ProductList":ProductList,
+//     "totalpages":totalpages,
+//     "page":page
+//   })
+//   res.send(ProductList);
+
+// });
+
+router.get("/", async (req, res) => {
+  try {
+    const { page = 1, perpage = 8, minprice, maxprice, location, subcatid, catname, category } = req.query;
+    const skip = (page - 1) * perpage;
+    const totalPosts = await Product.countDocuments();
+    const totalPages = Math.ceil(totalPosts / perpage);
+
+    if (page > totalPages) return res.status(404).json({ message: "Page not found" });
+
+    let query = {};
+    if (location && location !== "All") query.location = location;
+    if (subcatid) query.subcatid = subcatid;
+    if (catname) query.catname = catname;
+    if (category) query.category = category;
+
+    let products = await Product.find(query).populate("category subcat");
+
+    // Apply price filtering
+    if (minprice || maxprice) {
+      products = products.filter(p => {
+        if (minprice && p.price < +minprice) return false;
+        if (maxprice && p.price > +maxprice) return false;
+        return true;
+      });
     }
-  
-    // }
-  
-  }
-  else{
-    ProductList = await Product.find().populate("category subcat")
-      .skip((page-1)*perpage)
-      .limit(perpage)
-      .exec();
-  }
-  // if(req.query.catname !== undefined){
-  //   ProductList = await Product.find({catname:req.query.catname}).populate("category subcat")
 
-  // }
-  // else{
-  //   ProductList = await Product.find().populate("category subcat")
-  //     .skip((page-1)*perpage)
-  //     .limit(perpage)
-  //     .exec();
-  // }
-  // if(req.query.subcatid !== undefined){
-  //   ProductList = await Product.find({subcatid:req.query.subcatid}).populate("category subcat")
-  // }
-  // else{
-  //   ProductList = await Product.find().populate("category subcat")
-  //     .skip((page-1)*perpage)
-  //     .limit(perpage)
-  //     .exec();
-  // }
+    const paginatedProducts = products.slice(skip, skip + perpage);
 
-  if (!ProductList) {
-    res.status(500).json({ success: false });
+    res.status(200).json({
+      ProductList: paginatedProducts,
+      totalpages: totalPages,
+      page: +page
+    });
+
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
-  return res.status(200).json({
-    "ProductList":ProductList,
-    "totalpages":totalpages,
-    "page":page
-  })
-  res.send(ProductList);
-
 });
 
 router.get("/count", async (req, res)=>{
